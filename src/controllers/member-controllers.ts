@@ -132,21 +132,19 @@ export const createUser = async (
   const generation = req.body.generation;
 
   try {
-    interface DuplicateItem {
-      count: number;
-      name: string;
-    }
     // 이름 중복 체크
-    const checkDuplicateQuery = 'SELECT COUNT(*) as count FROM members WHERE name = ?';
-    const duplicateResult = await con.promise().query(checkDuplicateQuery, [name]);
-    const duplicateCount: number = Number(duplicateResult[0]);
-    //duplicateResult[0][0].count로 해야되는데 타입에러로 가져오질 못함
-    console.log('이름 듑 확인:', duplicateResult[0])
+    const checkDuplicateQuery = 'SELECT COUNT(*) as count FROM members WHERE name = ? AND generation = ?';
+    const duplicateResult = await con.promise().query(checkDuplicateQuery, [name, generation]);
+    const rows = duplicateResult[0] as RowDataPacket[];
+    const duplicateCount: number = rows[0].count;
+
+    console.log('이름 중복 확인:', duplicateCount);
 
     if (duplicateCount > 0) {
       // 동일한 이름을 가진 멤버가 이미 존재하는 경우
       // 새로운 이름 생성 로직을 추가하여 처리
-      const newName = `${name} ${String.fromCharCode(65 + duplicateCount)}`; // 'A', 'B', 'C' ...
+      const newAlphabet = String.fromCharCode(65 + duplicateCount);
+      const newName = `${name} ${newAlphabet}`; // 'name A', 'name B', 'name C' ...
 
       // 회원 추가 쿼리 실행
       const createUserQuery = 'INSERT INTO members (email, name, generation) VALUES (?,?,?)';
