@@ -139,6 +139,11 @@ export const writePost = async (
       .promise()
       .query(createPostQuery, [email, category, title, images, description]);
 
+    if (!result) {
+      // 데이터베이스에 올리는 과정이 실패한 경우
+      return res.status(500).json({ error: '게시물 작성에 실패했습니다.' });
+    }
+
     // 생성 데이터 반환
     const postId = (result as RowDataPacket).insertId;
     const getPostQuery = `SELECT id, category, title, images, description, created_at, views, email, name, generation, isAdmin FROM posts LEFT JOIN members ON posts.author_email = members.email WHERE id = ${postId}`;
@@ -146,10 +151,11 @@ export const writePost = async (
 
     return res.status(200).json(getResult[0]);
   } catch (err) {
-    console.error(err);
+
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 // 게시물 상세 조회
 export const getPost = async (
