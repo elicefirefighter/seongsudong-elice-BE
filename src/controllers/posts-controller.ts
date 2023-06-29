@@ -151,8 +151,7 @@ export const writePost = async (
 
     return res.status(200).json(getResult[0]);
   } catch (err) {
-
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: '게시물 작성에 실패했습니다.' });
   }
 };
 
