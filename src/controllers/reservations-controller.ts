@@ -6,7 +6,6 @@ import { sendEmail } from '../utils/send-email';
 import { ExtendedRequest } from '../types/checkAuth';
 
 
-
 // 예약 생성
 export const createReservation = async (
     req: Request,
